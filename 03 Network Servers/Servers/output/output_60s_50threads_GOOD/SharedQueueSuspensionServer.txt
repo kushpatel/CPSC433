@@ -1,0 +1,65 @@
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 361.0
+Data rate throughput (#megabytes per second): 214.93982410430908
+Average wait time (ms): 1.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 1848.0
+Data rate throughput (#megabytes per second): 1104.1625051498413
+Average wait time (ms): 0.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 8297.0
+Data rate throughput (#megabytes per second): 4968.8972816467285
+Average wait time (ms): 0.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 19743.0
+Data rate throughput (#megabytes per second): 11809.601046562195
+Average wait time (ms): 0.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 30779.0
+Data rate throughput (#megabytes per second): 18437.25896549225
+Average wait time (ms): 1.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 41942.0
+Data rate throughput (#megabytes per second): 25093.36043071747
+Average wait time (ms): 1.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 61380.0
+Data rate throughput (#megabytes per second): 36750.01351070404
+Average wait time (ms): 1.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 104359.0
+Data rate throughput (#megabytes per second): 62523.06700897217
+Average wait time (ms): 2.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 148643.0
+Data rate throughput (#megabytes per second): 90141.03924274445
+Average wait time (ms): 4.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 207171.0
+Data rate throughput (#megabytes per second): 124653.74162769318
+Average wait time (ms): 6.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 329573.0
+Data rate throughput (#megabytes per second): 200349.1337070465
+Average wait time (ms): 14.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 445760.0
+Data rate throughput (#megabytes per second): 268868.19527053833
+Average wait time (ms): 24.0
+========== Client requests statistics ==========
+
+Total transaction throughput (#transactions per second): 613396.0
+Data rate throughput (#megabytes per second): 370350.9453449249
+Average wait time (ms): 48.0

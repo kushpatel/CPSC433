@@ -1,0 +1,21 @@
+Node 0: started
+Node 1: started
+Node 0: server started, port = 21
+Failed to send pkt from: 0 to: 0
+Node 0: time = 1005 msec
+Node 0: connection accepted
+Node 0: time = 2005 msec
+Node 0: data corruption detected
+Node 0: position = 0
+Node 0: releasing connection...
+Failed to send pkt from: 0 to: 0
+Node 0: time = 2005 msec
+Node 0: connection accepted
+Node 0: time = 3005 msec
+Node 0: data corruption detected
+Node 0: position = 0
+Node 0: releasing connection...
+Fishnet exiting after time: 1000020 msec.
+Number of packets sent: 1003
+Number of packets dropped: 0
+Number of packets lost: 0

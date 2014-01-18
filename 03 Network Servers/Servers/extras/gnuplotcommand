@@ -1,0 +1,7 @@
+set title "Servers Throughput Benchmark"
+set xlabel "Number of client threads"
+set ylabel "Throughput in MBps"
+
+plot "Sequential_thp.txt" using 1:2 with lines, "CompetingThreads_thp.txt" using 1:2 with lines, "PerRequestThread_thp.txt" using 1:2 with lines,"SharedQueueBusyWait_thp.txt" using 1:2 with lines, "SharedQueueSuspension_thp.txt" using 1:2 with lines, "Async_thp.txt" using 1:2 with lines, "Apache_thp.txt" using 1:2 with lines
+
+plot "Sequential_wait.txt" using 1:2 with lines, "CompetingThreads_wait.txt" using 1:2 with lines, "PerRequestThread_wait.txt" using 1:2 with lines,"SharedQueueBusyWait_wait.txt" using 1:2 with lines, "SharedQueueSuspension_wait.txt" using 1:2 with lines, "Async_wait.txt" using 1:2 with lines, "Apache_wait.txt" using 1:2 with lines

@@ -1,0 +1,162 @@
+PART 2
+=======
+
+a) 
+I) To ensure that my client works properly across platforms I used bit shift operators to manually fill in the byte array to be sent over the network. I used the little endian format of bytes for both time stamp and sequence number. I then deserialized the bytes on client from the ping echo using the same convention (the assumption is that the server sends these bytes untouched). I also validate the data received from the server: check for correct message length, 'PINGECHO', correct sequence number (will catch if server changed the little endian format used) and correct password. On the other hand, my server does not have to deal with platform compatibility issues since it just inserts 'ECHO' in the byte array received from the client and returns the rest of the data untouched. However, in printing (for debugging) the received data at server, I assumed the little endian convention. This implies that the printing might not happen correctly at server but it will still send out valid echo messages to the client since it does not alter the bytes from the received packet except for adding 'ECHO'. The server just has to validate the message length, 'PING' and correct password.
+
+II) To measure the bandwidth from client to server, the client should send two packets as close in time as it can. The server will record the arrival times of the two packets. If the client sent the packets close enough together, the difference in arrival times at server will be larger than the difference in transmission times of the packets at client. The bandwidth of the network can be computed by dividing the packet size by the difference in the arrival times of the packets at server. Similarly, to measure the bandwidth from server to client, the server can replace time stamps by its own time of transmission and the client can figure out the bandwidth from the difference in the arrival times of the PINGECHO packets.
+
+III) To synchronize the clocks of the client and the server, the server should add another time stamp to the PINGECHO packet that will be equal to transmission time at server. The client computes the time of round trip as usual using its current time of receipt and the old time stamp that indicates when it first transmitted the packet. The client can then set its time to be equal to server's transmission time + 0.5(time of round trip). This is by the assumption that the latency between server-client equals the latency between client-server. Hence, the accuracy of this approach depends on the difference between the server-client and client-server latencies. The higher the difference, the less accurate the method. The accuracy of the method can however be increased by figuring out the approximate latencies between client-server and server-client by computing the respective bandwidths using the packet pair method in (II). Then we would set the client's time to server's transmission time + p(time of round trip) where p is the proportion of the round trip time spent on server-client journey (0 < p < 1).
+
+
+b) 
+I) The scheme described would work in an ideal scenario whereby there are no malicious entities and clients use some fixed ids that are unique to each client (e.g clientName_request# for an id of a particular request from the client). However, this breaks down in a practical system because clients use different ids for each request and these ids will not be unique since they get exhausted over time in a large scale system. Duplicate ids would lead to collisions/overwriting in the hash table maintained by the server that will in turn lead to responses being forwarded to wrong clients. A malicious client may also decide to send random requests with random ids such that it intercepts responses from the server by overwriting the hash table keys with its own IP address and port number. The malicious client can send a large number of such requests such that most of the other clients do not get their responses back.
+
+II) Let n = the total number of unique ids available for the scheme used. To exhaust the n possible unique ids in 300ms, there has to be at least n requests within that time interval of 300ms. Therefore, the problem is to find the probability that there are n requests within 300ms at the server. The assumption here is that unique ids will be generated as long as there are "free" ids that are not yet in the hash table of the server. Given that lambda is the arrival rate of requests per millisecond, the problem can be expressed as the probability that (lambda * 300) is greater or equal to n i.e P(300lambda >= n). We can then use probability distribution functions like the Poisson distribution to estimate this probability.
+
+III) Given a DNS name like a.b.c.d the DNS server should search its cache for the whole name first (a.b.c.d) and if not found then search for b.c.d and then c.d and lastly d (if results not found in cache at each stage).  As an assumption common with systems maintaining caches, we expect similar queries to end up at the DNS server. It is therefore beneficial to look up the whole DNS name straight away on receipt and this will lead to fast request processing for similar requests. Similar requests are quickly handled also by the fact that we are searching from head to tail of the DNS name which implicitely assumes that we receive a lot of queries with the same domain name endings such as yale.edu at the DNS server.
+
+PART 3
+=======
+
+a) Command sequence:
+		dig +norecurse @a.root-servers.net cicada.cs.yale.edu A
+		Output:
+			; <<>> DiG 9.8.5-P1 <<>> +norecurse @a.root-servers.net cicada.cs.yale.edu A
+			; (1 server found)
+			;; global options: +cmd
+			;; Got answer:
+			;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 40889
+			;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 6, ADDITIONAL: 7
+
+			;; QUESTION SECTION:
+			;cicada.cs.yale.edu.		IN	A
+
+			;; AUTHORITY SECTION:
+			edu.			172800	IN	NS	l.edu-servers.net.
+			edu.			172800	IN	NS	g.edu-servers.net.
+			edu.			172800	IN	NS	f.edu-servers.net.
+			edu.			172800	IN	NS	d.edu-servers.net.
+			edu.			172800	IN	NS	c.edu-servers.net.
+			edu.			172800	IN	NS	a.edu-servers.net.
+
+			;; ADDITIONAL SECTION:
+			l.edu-servers.net.	172800	IN	A	192.41.162.30
+			g.edu-servers.net.	172800	IN	A	192.42.93.30
+			g.edu-servers.net.	172800	IN	AAAA	2001:503:cc2c::2:36
+			f.edu-servers.net.	172800	IN	A	192.35.51.30
+			d.edu-servers.net.	172800	IN	A	192.31.80.30
+			c.edu-servers.net.	172800	IN	A	192.26.92.30
+			a.edu-servers.net.	172800	IN	A	192.5.6.30
+
+			;; Query time: 87 msec
+			;; SERVER: 198.41.0.4#53(198.41.0.4)
+			;; WHEN: Sun Sep 29 23:53:42 EDT 2013
+			;; MSG SIZE  rcvd: 271
+		
+		dig +norecurse @a.edu-servers.net cicada.cs.yale.edu A
+		Output: 
+			; <<>> DiG 9.8.5-P1 <<>> +norecurse @a.edu-servers.net cicada.cs.yale.edu A
+			; (1 server found)
+			;; global options: +cmd
+			;; Got answer:
+			;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 5488
+			;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 5, ADDITIONAL: 5
+
+			;; QUESTION SECTION:
+			;cicada.cs.yale.edu.		IN	A
+
+			;; AUTHORITY SECTION:
+			yale.edu.		172800	IN	NS	serv1.net.yale.edu.
+			yale.edu.		172800	IN	NS	serv2.net.yale.edu.
+			yale.edu.		172800	IN	NS	serv4.net.yale.edu.
+			yale.edu.		172800	IN	NS	serv3.net.yale.edu.
+			yale.edu.		172800	IN	NS	yale-server.uchicago.edu.
+
+			;; ADDITIONAL SECTION:
+			serv1.net.yale.edu.	172800	IN	A	130.132.1.9
+			serv2.net.yale.edu.	172800	IN	A	130.132.1.10
+			serv4.net.yale.edu.	172800	IN	A	130.132.89.9
+			serv3.net.yale.edu.	172800	IN	A	130.132.1.11
+			yale-server.uchicago.edu. 172800 IN	A	128.135.249.140
+
+			;; Query time: 43 msec
+			;; SERVER: 192.5.6.30#53(192.5.6.30)
+			;; WHEN: Sun Sep 29 23:56:05 EDT 2013
+			;; MSG SIZE  rcvd: 235
+
+		dig +norecurse @yale-server.uchicago.edu cicada.cs.yale.edu A
+		Output: 
+		; <<>> DiG 9.8.5-P1 <<>> +norecurse @yale-server.uchicago.edu cicada.cs.yale.edu A
+		; (1 server found)
+		;; global options: +cmd
+		;; Got answer:
+		;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 52183
+		;; flags: qr aa; QUERY: 1, ANSWER: 2, AUTHORITY: 4, ADDITIONAL: 4
+
+		;; QUESTION SECTION:
+		;cicada.cs.yale.edu.		IN	A
+
+		;; ANSWER SECTION:
+		cicada.cs.yale.edu.	10800	IN	CNAME	cicada.zoo.cs.yale.edu.
+		cicada.zoo.cs.yale.edu.	10800	IN	A	128.36.232.5
+
+		;; AUTHORITY SECTION:
+		zoo.cs.yale.edu.	10800	IN	NS	serv1.net.yale.edu.
+		zoo.cs.yale.edu.	10800	IN	NS	serv2.net.yale.edu.
+		zoo.cs.yale.edu.	10800	IN	NS	serv3.net.yale.edu.
+		zoo.cs.yale.edu.	10800	IN	NS	serv4.net.yale.edu.
+
+		;; ADDITIONAL SECTION:
+		serv1.net.yale.edu.	10800	IN	A	130.132.1.9
+		serv2.net.yale.edu.	10800	IN	A	130.132.1.10
+		serv3.net.yale.edu.	10800	IN	A	130.132.1.11
+		serv4.net.yale.edu.	10800	IN	A	130.132.89.9
+
+		;; Query time: 30 msec
+		;; SERVER: 128.135.249.140#53(128.135.249.140)
+		;; WHEN: Sun Sep 29 23:56:57 EDT 2013
+		;; MSG SIZE  rcvd: 225
+
+ This gives the answer section that contains the IP address of cicada.cs.yale.edu (128.36.232.5)
+ Yale uses a server at uchicago as a backup of its name servers as seen on one of the steps above.
+
+b) Using the command: dig yale.edu txt :
+
+	; <<>> DiG 9.8.5-P1 <<>> yale.edu txt
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 35766
+	;; flags: qr aa rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 4, ADDITIONAL: 4
+
+	;; QUESTION SECTION:
+	;yale.edu.			IN	TXT
+
+	;; ANSWER SECTION:
+	yale.edu.		10800	IN	TXT	"google-site-verification=wLNdYe7PcFN1GTfpDeWAT-aPFTWpa_fMn7ZWDw07cuc"
+	yale.edu.		10800	IN	TXT	"v=spf1 ip4:130.132.50.0/24 ip4:130.132.232.0/24 include:_spf.google.com ?all"
+	yale.edu.		10800	IN	TXT	"KVATau69gzhqUOgCyXmfd9cSFFIarSmLDzRIuuICLnF8FgBUcmhtEuWIfd8/R4wkQJh9vIfvF0GJ/s3/S2RBHQ=="
+	yale.edu.		10800	IN	TXT	"MS=ms71696546"
+
+	;; AUTHORITY SECTION:
+	yale.edu.		10800	IN	NS	serv3.net.yale.edu.
+	yale.edu.		10800	IN	NS	serv4.net.yale.edu.
+	yale.edu.		10800	IN	NS	serv2.net.yale.edu.
+	yale.edu.		10800	IN	NS	serv1.net.yale.edu.
+
+	;; ADDITIONAL SECTION:
+	serv1.net.yale.edu.	10800	IN	A	130.132.1.9
+	serv2.net.yale.edu.	10800	IN	A	130.132.1.10
+	serv3.net.yale.edu.	10800	IN	A	130.132.1.11
+	serv4.net.yale.edu.	10800	IN	A	130.132.89.9
+
+	;; Query time: 2 msec
+	;; SERVER: 130.132.1.9#53(130.132.1.9)
+	;; WHEN: Mon Sep 30 00:06:06 EDT 2013
+	;; MSG SIZE  rcvd: 471
+
+	
+	We find the SPF validated IP addresses in the answer section:
+	ip4:130.132.50.0/24 ip4:130.132.232.0/24
+	This gives the range of IP addresses that are allowed to send email to yale.edu domain.
+
